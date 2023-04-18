@@ -8,8 +8,12 @@ import type {
   ReactNode,
 } from 'react'
 import { Children, useCallback, useMemo } from 'react'
-import type { CommonProps, GroupBase, OptionProps, Props } from 'react-select'
-import type Select from 'react-select'
+import type Select, {
+  CommonProps,
+  GroupBase,
+  OptionProps,
+  Props,
+} from 'react-select'
 import { useFormField } from '../../hooks'
 import { useErrors } from '../../providers'
 import type { BaseFieldProps } from '../../types'
