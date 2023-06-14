@@ -1,41 +1,39 @@
 import { Checkbox } from '@ultraviolet/ui'
-import type { FieldState } from 'final-form'
-import type { ComponentProps, JSX, ReactNode, Ref } from 'react'
+import type { ComponentProps, ReactNode, Ref } from 'react'
 import { forwardRef } from 'react'
-import { useFormField } from '../../hooks'
-import { useErrors } from '../../providers'
+import type { FieldValues } from 'react-hook-form'
+import { Controller } from 'react-hook-form'
 import type { BaseFieldProps } from '../../types'
 
-type CheckboxValue = string
-
-type CheckboxFieldProps<T = CheckboxValue, K = string> = BaseFieldProps<T, K> &
-  Partial<
-    Pick<
-      ComponentProps<typeof Checkbox>,
-      | 'disabled'
-      | 'onBlur'
-      | 'onChange'
-      | 'onFocus'
-      | 'progress'
-      | 'size'
-      | 'value'
-      | 'data-testid'
-      | 'helper'
-    >
-  > & {
-    name: string
-    label?: string
-    className?: string
-    children?: ReactNode
-    required?: boolean
-  }
+type CheckboxFieldProps<TFieldValues extends FieldValues> =
+  BaseFieldProps<TFieldValues> &
+    Partial<
+      Pick<
+        ComponentProps<typeof Checkbox>,
+        | 'disabled'
+        | 'onBlur'
+        | 'onChange'
+        | 'onFocus'
+        | 'progress'
+        | 'size'
+        | 'value'
+        | 'data-testid'
+        | 'helper'
+        | 'tooltip'
+      >
+    > & {
+      label?: string
+      className?: string
+      children?: ReactNode
+      required?: boolean
+    }
 
 export const CheckboxField = forwardRef(
-  (
+  <TFieldValues extends FieldValues>(
     {
-      validate,
+      // validate,
       name,
-      label = '',
+      // label = '',
       size,
       progress,
       disabled,
@@ -45,58 +43,45 @@ export const CheckboxField = forwardRef(
       onChange,
       onBlur,
       onFocus,
-      value,
+      // value,
+      rules,
       helper,
+      tooltip,
       'data-testid': dataTestId,
-    }: CheckboxFieldProps,
+    }: CheckboxFieldProps<TFieldValues>,
     ref: Ref<HTMLInputElement>,
-  ): JSX.Element => {
-    const { getError } = useErrors()
-
-    const { input, meta } = useFormField(name, {
-      disabled,
-      required,
-      type: 'checkbox',
-      validate,
-      value,
-    })
-
-    const error = getError({
-      label,
-      meta: meta as FieldState<unknown>,
-      name,
-      value: input.value ?? input.checked,
-    })
-
-    return (
-      <Checkbox
-        name={input.name}
-        onChange={event => {
-          input.onChange(event)
-          onChange?.(event)
-        }}
-        onBlur={event => {
-          input.onBlur(event)
-          onBlur?.(event)
-        }}
-        onFocus={event => {
-          input.onFocus(event)
-          onFocus?.(event)
-        }}
-        size={size}
-        progress={progress}
-        disabled={disabled}
-        checked={input.checked}
-        error={error}
-        helper={helper}
-        ref={ref}
-        className={className}
-        value={input.value}
-        required={required}
-        data-testid={dataTestId}
-      >
-        {children}
-      </Checkbox>
-    )
-  },
+  ) => (
+    <Controller
+      name={name}
+      rules={{ required, ...rules }}
+      render={({ field, fieldState: { error } }) => (
+        <Checkbox
+          {...field}
+          onChange={event => {
+            field.onChange(event)
+            onChange?.(event)
+          }}
+          onBlur={event => {
+            field.onBlur()
+            onBlur?.(event)
+          }}
+          onFocus={onFocus}
+          size={size}
+          progress={progress}
+          disabled={disabled}
+          checked={!!field.value}
+          error={error?.message}
+          ref={ref}
+          className={className}
+          // value={input.value}
+          required={required}
+          data-testid={dataTestId}
+          tooltip={tooltip}
+          helper={helper}
+        >
+          {children}
+        </Checkbox>
+      )}
+    />
+  ),
 )

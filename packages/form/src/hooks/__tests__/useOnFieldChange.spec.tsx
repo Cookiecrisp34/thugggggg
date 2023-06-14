@@ -45,14 +45,14 @@ describe('useOnFieldChange', () => {
   test('should render correctly', () => {
     const callback = jest.fn((value, values) => {
       expect(value).toBe(updated.textInputName)
-      expect(values).toBe(updated)
+      expect(values).toStrictEqual(updated)
     })
 
     let initialValues = initial
 
     const { result, rerender } = renderHook(
       () =>
-        useOnFieldChange<FormValues['textInputName'], FormValues>(
+        useOnFieldChange<FormValues>(
           'textInputName',
           callback,
         ),
@@ -81,7 +81,7 @@ describe('useOnFieldChange', () => {
 
     const { result, rerender } = renderHook(
       ({ enabled }) => {
-        useOnFieldChange<FormValues['textInputName'], FormValues>(
+        useOnFieldChange<FormValues>(
           'textInputName',
           callback,
           // enabled will depends of rerender({ condition: '' })

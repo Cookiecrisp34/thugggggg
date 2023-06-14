@@ -15,3 +15,5 @@ export default {
 } as Meta
 
 export { Playground } from './Playground.stories'
+export { Playground2 } from './Playground2.stories'
+

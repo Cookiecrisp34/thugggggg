@@ -1,13 +1,4 @@
-export { FieldArray, useFieldArray } from 'react-final-form-arrays'
 export { FORM_ERROR } from 'final-form'
-export type { FormApi } from 'final-form'
-export {
-  FormSpy,
-  useFormState,
-  useForm,
-  useField,
-  Field,
-} from 'react-final-form'
 export {
   CheckboxField,
   CheckboxGroupField,
@@ -24,8 +15,12 @@ export {
   TimeField,
   ToggleField,
   RadioGroupField,
+  FormSpy,
+  FieldArray,
 } from './components'
-export { useValidation, useOnFieldChange } from './hooks'
+export { useOnFieldChange } from './hooks'
 export type { BaseFieldProps, FormErrors } from './types'
-export { pickValidators } from './helpers'
 export { useErrors, ErrorProvider } from './providers/ErrorContext'
+export { Controller, useController, useFormContext } from 'react-hook-form'
+export { useFormState, useField, useForm, useFieldArray } from './hooks'
+export type { FieldValues, FieldValue, Path, Validate } from 'react-hook-form'

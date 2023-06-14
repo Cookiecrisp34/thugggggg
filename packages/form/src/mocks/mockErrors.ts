@@ -1,32 +1,46 @@
-import type { FormErrors } from '../types'
+import type { FormErrors, MetaField } from '../types'
 
 export const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
 
 export const mockErrors: FormErrors = {
-  MAX_DATE: ({ maxDate }) => `Date must be lower than ${maxDate?.toString()}`,
-  MAX_LENGTH: ({ maxLength }) =>
+  maxDate: ({ maxDate }) => `Date must be lower than ${maxDate?.toString()}`,
+  maxLength: ({ maxLength }) =>
     `This field should have a length lower than ${maxLength}`,
-  MIN_DATE: ({ minDate }) => `Date must be greater than ${minDate?.toString()}`,
-  MIN_LENGTH: ({ minLength }) =>
+  minDate: ({ minDate }) => `Date must be greater than ${minDate?.toString()}`,
+  minLength: ({ minLength }) =>
     `This field should have a length greater than ${minLength}`,
-  REGEX: ({ regex }) => {
-    if (
-      (Array.isArray(regex[0])
-        ? regex?.[0]?.[0]?.source
-        : regex?.[0]?.source) === emailRegex.source
-    ) {
-      return 'Invalid email'
-    }
-
-    return `This field should match the regex ${regex
-      .map(r =>
-        Array.isArray(r)
-          ? r.map(nestedRegex => nestedRegex.source).join(' or ')
-          : r.source,
-      )
-      .join(' and ')}`
+  pattern: ({ regex }) => `This field should match the regex`,
+  required: () => 'This field is required',
+  max: ({ max }) => `This field is too high (maximum is : ${max})`,
+  min: () => 'This field is too low',
+  onChange(params: MetaField): string {
+    throw new Error('Function not implemented.')
   },
-  REQUIRED: 'This field is required',
-  TOO_HIGH: ({ max }) => `This field is too high (maximum is : ${max})`,
-  TOO_LOW: 'This field is too low',
+  disabled(params: MetaField): string {
+    throw new Error('Function not implemented.')
+  },
+  value(params: MetaField): string {
+    throw new Error('Function not implemented.')
+  },
+  onBlur(params: MetaField): string {
+    throw new Error('Function not implemented.')
+  },
+  valueAsNumber(params: MetaField): string {
+    throw new Error('Function not implemented.')
+  },
+  valueAsDate(params: MetaField): string {
+    throw new Error('Function not implemented.')
+  },
+  setValueAs(params: MetaField): string {
+    throw new Error('Function not implemented.')
+  },
+  validate(params: MetaField): string {
+    throw new Error('Function not implemented.')
+  },
+  shouldUnregister(params: MetaField): string {
+    throw new Error('Function not implemented.')
+  },
+  deps(params: MetaField): string {
+    throw new Error('Function not implemented.')
+  },
 }

@@ -1,35 +1,38 @@
 import { DateInput } from '@ultraviolet/ui'
-import type { FieldState } from 'final-form'
 import type { ComponentProps, FocusEvent } from 'react'
-import { useFormField } from '../../hooks'
+import type { FieldValues } from 'react-hook-form'
+import { Controller } from 'react-hook-form'
 import { useErrors } from '../../providers'
 import type { BaseFieldProps } from '../../types'
+import { maxDateValidator } from '../../validators/maxDate'
+import { minDateValidator } from '../../validators/minDate'
 
-type DateFieldProps = BaseFieldProps<Date> &
-  Omit<
-    ComponentProps<typeof DateInput>,
-    | 'maxDate'
-    | 'minDate'
-    | 'disabled'
-    | 'required'
-    | 'locale'
-    | 'name'
-    | 'onChange'
-    | 'onFocus'
-    | 'onBlur'
-    | 'autoFocus'
-  > & {
-    name: string
-    maxDate?: Date
-    minDate?: Date
-    disabled?: boolean
-    required?: boolean
-    locale?: string
-    onChange?: (value: Date | null) => void
-    onBlur?: (event: FocusEvent<HTMLElement>) => void
-    onFocus?: (value: FocusEvent<HTMLElement>) => void
-    autoFocus?: boolean
-  }
+type DateFieldProps<TFieldValues extends FieldValues> =
+  BaseFieldProps<TFieldValues> &
+    Omit<
+      ComponentProps<typeof DateInput>,
+      | 'maxDate'
+      | 'minDate'
+      | 'disabled'
+      | 'required'
+      | 'locale'
+      | 'name'
+      | 'onChange'
+      | 'onFocus'
+      | 'onBlur'
+      | 'autoFocus'
+    > & {
+      name: string
+      maxDate?: Date
+      minDate?: Date
+      disabled?: boolean
+      required?: boolean
+      locale?: string
+      onChange?: (value: Date | null) => void
+      onBlur?: (event: FocusEvent<HTMLElement>) => void
+      onFocus?: (value: FocusEvent<HTMLElement>) => void
+      autoFocus?: boolean
+    }
 
 const parseDate = (value: string | Date): Date =>
   typeof value === 'string' ? new Date(value) : value
@@ -37,86 +40,74 @@ const parseDate = (value: string | Date): Date =>
 const isEmpty = (value?: Date | string): boolean =>
   typeof value === 'string' ? value === '' : value === undefined
 
-export const DateField = ({
+export const DateField = <TFieldValues extends FieldValues>({
   required,
   name,
   label = '',
-  validate,
+  // validate,
   format,
   locale,
   maxDate,
   minDate,
-  initialValue,
+  // initialValue,
   disabled,
-  value: inputVal,
+  // value: inputVal,
   onChange,
   onBlur,
   onFocus,
-  formatOnBlur,
+  // formatOnBlur,
+  rules,
   autoFocus = false,
-  'data-testid': dataTestId,
-}: DateFieldProps) => {
+}: DateFieldProps<TFieldValues>) => {
   const { getError } = useErrors()
 
-  const { input, meta } = useFormField<Date>(name, {
-    disabled,
-    formatOnBlur,
-    initialValue,
-    maxDate,
-    minDate,
-    required,
-    validate,
-    value: inputVal,
-  })
-
-  const error = getError({
-    label,
-    maxDate,
-    meta: meta as FieldState<unknown>,
-    minDate,
-    name,
-    value: input.value,
-  })
-
   return (
-    <DateInput
-      label={label}
-      format={
-        format ||
-        (value => (value ? parseDate(value).toLocaleDateString() : ''))
-      }
-      locale={locale}
-      required={required}
-      value={input.value}
-      onChange={(val: Date | null) => {
-        if (val) {
-          onChange?.(val)
-          const newDate = parseDate(val)
-          if (isEmpty(input.value)) {
-            input.onChange(newDate)
-
-            return
+    <Controller
+      name={name}
+      rules={{
+        ...rules,
+        validate: {
+          minDate: minDateValidator(minDate),
+          maxDate: maxDateValidator(maxDate),
+        },
+        required,
+      }}
+      render={({ field, fieldState: { error } }) => (
+        <DateInput
+          {...field}
+          label={label}
+          format={
+            format ||
+            (value => (value ? parseDate(value).toLocaleDateString() : ''))
           }
-          const currentDate = parseDate(input.value)
-          newDate.setHours(currentDate.getHours(), currentDate.getMinutes())
-          input.onChange(newDate)
-        }
-      }}
-      onBlur={(e: FocusEvent<HTMLElement>) => {
-        input.onBlur(e)
-        onBlur?.(e)
-      }}
-      onFocus={(e: FocusEvent<HTMLElement>) => {
-        input.onFocus(e)
-        onFocus?.(e)
-      }}
-      maxDate={maxDate}
-      minDate={minDate}
-      error={error}
-      disabled={disabled}
-      autoFocus={autoFocus}
-      name={input.name}
-      data-testid={dataTestId}
+          locale={locale}
+          required={required}
+          onChange={(val: Date | null) => {
+            if (val) {
+              onChange?.(val)
+              const newDate = parseDate(val)
+              if (isEmpty(field.value)) {
+                field.onChange(newDate)
+
+                return
+              }
+              const currentDate = parseDate(field.value)
+              newDate.setHours(currentDate.getHours(), currentDate.getMinutes())
+              field.onChange(newDate)
+            }
+          }}
+          onBlur={(e: FocusEvent<HTMLElement>) => {
+            field.onBlur()
+            onBlur?.(e)
+          }}
+          onFocus={onFocus}
+          maxDate={maxDate}
+          minDate={minDate}
+          error={getError({ minDate, maxDate, label }, error)}
+          disabled={disabled}
+          autoFocus={autoFocus}
+        />
+      )}
     />
   )
 }
