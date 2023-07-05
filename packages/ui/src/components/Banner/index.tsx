@@ -5,19 +5,26 @@ import { Button } from '../Button'
 import { Link } from '../Link'
 import { Stack } from '../Stack'
 import { Text } from '../Text'
+import pattern from './Pattern.svg'
 
 type Variant = 'intro' | 'promotional'
 type Size = 'small' | 'medium'
+
+const CloseButton = styled(Button)``
 
 const Container = styled('div', {
   shouldForwardProp: prop => !['variant', 'size'].includes(prop),
 })<{ variant: Variant; size: Size }>`
   padding: ${({ theme, size }) => theme.space[size === 'small' ? '2' : '3']};
   border-radius: ${({ theme }) => theme.radii.large};
-  background: ${({ theme, variant }) =>
+  background-color: ${({ theme, variant }) =>
     variant === 'intro'
       ? theme.colors.primary.background
       : theme.colors.primary.backgroundStrong};
+  background-image: ${({ variant }) =>
+    variant === 'promotional' ? `url(${pattern})` : null};
+  background-repeat: no-repeat;
+  background-position: right;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -27,6 +34,10 @@ const Container = styled('div', {
   > img {
     height: ${({ size }) => (size === 'medium' ? '140px' : '100px')};
     align-self: center;
+  }
+
+  ${CloseButton} {
+    background: transparent;
   }
 `
 
@@ -114,7 +125,7 @@ export const Banner = ({
           ) : null}
         </Stack>
       </Stack>
-      <Button
+      <CloseButton
         icon="close"
         size="small"
         variant={variant === 'intro' ? 'ghost' : 'filled'}
