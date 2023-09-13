@@ -3,13 +3,6 @@ import { Icon } from '..'
 
 export default {
   component: Icon,
-  parameters: {
-    docs: {
-      description: {
-        component: 'Allow you to display an svg icon',
-      },
-    },
-  },
   title: 'Icons/Icon',
 } as Meta
 
